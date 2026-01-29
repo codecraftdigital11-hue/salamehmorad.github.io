@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salameh Morad</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base styles and reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f7f4; /* Soft off-white */
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 40px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header and title */
+        header {
+            text-align: center;
+            padding: 40px 0 30px;
+            border-bottom: 1px solid #e8e4dd;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 300;
+            color: #5a5349; /* Soft dark beige */
+            letter-spacing: 0; /* No letter spacing for Arabic */
+            position: relative;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        h1:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 80px;
+            height: 2px;
+            background-color: #d4af37; /* Gold accent */
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: #7a7267;
+            font-weight: 300;
+            font-style: italic;
+        }
+        
+        /* Gallery grid - Updated for consistent portrait ratio */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        /* Portrait ratio for ALL images */
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            background-color: white;
+            transition: all 0.3s ease;
+            height: 350px; /* Taller height for portrait ratio */
+            cursor: pointer;
+            aspect-ratio: 1080/1350; /* Portrait ratio: 1080x1350 for ALL images */
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12), 0 0 0 1px #d4af37;
+        }
+        
+        .gallery-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures images are well cropped */
+            transition: transform 0.5s ease;
+        }
+        
+        .gallery-item:hover .gallery-img {
+            transform: scale(1.05);
+        }
+        
+        .img-overlay {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+            color: white;
+            padding: 15px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            text-align: right; /* Align text to right for Arabic */
+        }
+        
+        .gallery-item:hover .img-overlay {
+            transform: translateY(0);
+        }
+        
+        .img-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .img-desc {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        /* Lightbox modal */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.92);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 4px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .lightbox-img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            left: 30px; /* Flipped for RTL */
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+            background: none;
+            border: none;
+            z-index: 1001;
+        }
+        
+        .lightbox-close:hover {
+            color: #d4af37; /* Gold accent */
+        }
+        
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.3);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .lightbox-nav:hover {
+            background: rgba(212, 175, 55, 0.8);
+        }
+        
+        .lightbox-prev {
+            right: 30px; /* Flipped for RTL */
+        }
+        
+        .lightbox-next {
+            left: 30px; /* Flipped for RTL */
+        }
+        
+        .lightbox-caption {
+            position: absolute;
+            bottom: 30px;
+            right: 0;
+            left: 0;
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            padding: 0 20px;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            color: #7a7267;
+            font-size: 0.9rem;
+            padding-top: 30px;
+            border-top: 1px solid #e8e4dd;
+            margin-top: 20px;
+        }
+        
+        .gold {
+            color: #d4af37;
+        }
+        
+        /* Arabic font styling */
+        .arabic-font {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 20px;
+            }
+            
+            .gallery-item {
+                height: 300px; /* Adjusted for mobile */
+            }
+            
+            .lightbox-nav {
+                width: 50px;
+                height: 50px;
+                font-size: 2rem;
+            }
+            
+            .lightbox-prev {
+                right: 15px; /* Flipped for RTL */
+            }
+            
+            .lightbox-next {
+                left: 15px; /* Flipped for RTL */
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .gallery-item {
+                height: 400px; /* Taller for mobile portrait */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="arabic-font">معرض سلامه مراد</h1>
+            <p class="subtitle arabic-font">مجموعة من التحف الفنية</p>
+        </header>
+        
+        <main>
+            <!-- Image Gallery Grid -->
+            <div class="gallery-grid">
+                <!-- Gallery Item 1 - Portrait -->
+                <div class="gallery-item" data-index="0">
+                    <img src="image 1.jpeg" alt="أدب كلاسيكي" class="gallery-img">
+                    <div class="img-overlay">
+                        <div class="img-title arabic-font">الخامة : اكريليك على كانفس</div>
+                        <div class="img-desc arabic-font">الادوات : سكين الرسم</div>
+                    </div>
+                </div>
+                
+                <!-- Gallery Item 3 - Portrait -->
+                <div class="gallery-item" data-index="2">
+                    <img src="image 3.jpeg" alt="عمارة قديمة" class="gallery-img">
+                    <div class="img-overlay">
+                        <div class="img-title arabic-font">الاسم : الجحيم</div>
+                        <div class="img-desc arabic-font">الخامة : زيتي على كانفس</div>
+                        <div class="img-desc arabic-font">الادوات : فرشاة الرسم</div>
+
+                    </div>
+                </div>
+                
+                <!-- Gallery Item 4 - Portrait -->
+                <div class="gallery-item" data-index="3">
+                    <img src="image 4.jpeg" alt="لوحة كلاسيكية" class="gallery-img">
+                    <div class="img-overlay">
+                        <div class="img-title arabic-font">الاسم : حاملة النعش </div>
+                        <div class="img-desc arabic-font">الخامة : زيتي على كانفس</div>
+                        <div class="img-desc arabic-font">الادوات : فرشاة الرسم</div>
+
+                    </div>
+                </div>
+                
+                <!-- Gallery Item 5 - Portrait -->
+                <div class="gallery-item" data-index="4">
+                    <img src="image 5.jpeg" alt="مخطوطة قديمة" class="gallery-img">
+                    <div class="img-overlay">
+                        <div class="img-title arabic-font">الاسم : الامومة</div>
+                        <div class="img-desc arabic-font">الخامة : زيتي على كانفس</div>
+                        <div class="img-desc arabic-font">الادوات : فرشاة الرسم</div>
+
+                    </div>
+                </div>
+                
+                <!-- Gallery Item 6 - Portrait -->
+                <div class="gallery-item" data-index="5">
+                    <img src="image 6.jpeg" alt="فن الباروك" class="gallery-img">
+                    <div class="img-overlay">
+                        <div class="img-title arabic-font">الخامة : زيتي على كانفس</div>
+                        <div class="img-desc arabic-font">الادوات : فرشاة الرسم</div>
+                    </div>
+                </div>
+                
+                <!-- Gallery Item 7 - Portrait -->
+                <div class="gallery-item" data-index="6">
+                    <img src="image 7.jpeg" alt="قطعة أثرية" class="gallery-img">
+                    <div class="img-overlay">
+                        <div class="img-title arabic-font">الخامة : زيتي على كانفس</div>
+                        <div class="img-desc arabic-font">الادوات : فرشاة الرسم</div>
+                    </div>
+                </div>
+                
+                <!-- Gallery Item 8 - Portrait -->
+                <div class="gallery-item" data-index="7">
+                    <img src="image 8.jpeg" alt="نحت كلاسيكي" class="gallery-img">
+                    <div class="img-overlay">
+                        <div class="img-title arabic-font">الخامة : زيتي على كانفس</div>
+                        <div class="img-desc arabic-font">الادوات : فرشاة الرسم</div>
+                    </div>
+                </div>
+                
+                <!-- Gallery Item 9 - Portrait -->
+                <div class="gallery-item" data-index="8">
+                    <img src="image 9.jpeg" alt="نسيج تاريخي" class="gallery-img">
+                    <div class="img-overlay">
+                        <div class="img-title arabic-font">الخامة : زيتي على كانفس </div>
+                        <div class="img-desc arabic-font">الادوات : سكين الرسم</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p class="arabic-font">CodeCraft &copy; <span id="current-year">2026</span> | جميع الحقوق محفوظة  <span class="gold"></span></p>
+        </footer>
+    </div>
+    
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightbox-close">&times;</button>
+        <button class="lightbox-nav lightbox-prev" id="lightbox-prev"><i class="fas fa-chevron-right"></i></button>
+        <button class="lightbox-nav lightbox-next" id="lightbox-next"><i class="fas fa-chevron-left"></i></button>
+        <img class="lightbox-content" id="lightbox-img">
+        <div class="lightbox-caption arabic-font" id="lightbox-caption"></div>
+    </div>
+
+    <script>
+        // Gallery data - Updated with your local image files
+        const galleryData = [
+            {
+                url: "image 1.jpeg",
+                title: "أدب كلاسيكي",
+                description: "كتب قديمة على رف خشبي"
+            },
+            {
+                url: "image 2.jpeg",
+                title: "نحت عصر النهضة",
+                description: "تمثال رخامي في متحف"
+            },
+            {
+                url: "image 3.jpeg",
+                title: "عمارة قديمة",
+                description: "أعمدة ومباني تاريخية"
+            },
+            {
+                url: "image 4.jpeg",
+                title: "لوحة كلاسيكية",
+                description: "تفاصيل رسم زيتي"
+            },
+            {
+                url: "image 5.jpeg",
+                title: "مخطوطة قديمة",
+                description: "وثيقة تاريخية مكتوبة بخط اليد"
+            },
+            {
+                url: "image 6.jpeg",
+                title: "فن الباروك",
+                description: "تفاصيل زخرفية من لوحة كلاسيكية"
+            },
+            {
+                url: "image 7.jpeg",
+                title: "قطعة أثرية",
+                description: "فخار وآثار تاريخية"
+            },
+            {
+                url: "image 8.jpeg",
+                title: "نحت كلاسيكي",
+                description: "تمثال نصفي روماني من الرخام"
+            },
+            {
+                url: "image 9.jpeg",
+                title: "نسيج تاريخي",
+                description: "نسيج منسوج بتصميم معقد"
+            },
+            {
+                url: "image 10.jpeg",
+                title: "تفاصيل تحفة فنية",
+                description: "لقطة مقربة لملمس لوحة كلاسيكية"
+            }
+        ];
+        
+        // DOM elements
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxCaption = document.getElementById('lightbox-caption');
+        const lightboxClose = document.getElementById('lightbox-close');
+        const lightboxPrev = document.getElementById('lightbox-prev');
+        const lightboxNext = document.getElementById('lightbox-next');
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        
+        // Current image index
+        let currentIndex = 0;
+        
+        // Set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // Open lightbox with clicked image
+        function openLightbox(index) {
+            currentIndex = index;
+            updateLightbox();
+            lightbox.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+        
+        // Update lightbox content
+        function updateLightbox() {
+            const item = galleryData[currentIndex];
+            lightboxImg.src = item.url;
+            lightboxCaption.textContent = `${item.title} - ${item.description}`;
+        }
+        
+        // Close lightbox
+        function closeLightbox() {
+            lightbox.style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restore scrolling
+        }
+        
+        // Navigate to previous image
+        function prevImage() {
+            currentIndex = (currentIndex - 1 + galleryData.length) % galleryData.length;
+            updateLightbox();
+        }
+        
+        // Navigate to next image
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % galleryData.length;
+            updateLightbox();
+        }
+        
+        // Event listeners for gallery items
+        galleryItems.forEach((item, index) => {
+            item.addEventListener('click', () => openLightbox(index));
+        });
+        
+        // Event listeners for lightbox controls
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightboxPrev.addEventListener('click', prevImage);
+        lightboxNext.addEventListener('click', nextImage);
+        
+        // Close lightbox when clicking outside the image
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.style.display === 'flex') {
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowRight') prevImage(); // Reversed for RTL
+                if (e.key === 'ArrowLeft') nextImage(); // Reversed for RTL
+            }
+        });
+    </script>
+</body>
+</html>
